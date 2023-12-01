@@ -24,5 +24,6 @@ Route::get('aes',[SpatieController::class,'aes']);
 Route::post('upload',[UploadController::class,'upload']);
 Route::get('show',[UploadController::class,'show']);
 Route::get('split',[UploadController::class,'split']);
+Route::get('decription_file',[UploadController::class,'decription_file']);
 
 

@@ -12,6 +12,7 @@ use PhpParser\Node\Expr\Print_;
 // use Illuminate\Support\Facades\Facade\DB;
 class UploadController extends Controller
 {
+
     public function upload(Request $request){
  $path=$request->file->Store('public/uploads');
 
@@ -19,7 +20,7 @@ class UploadController extends Controller
 return response()->json(['message' => 'File uploaded successfully', 'file_path' => $path]);
     }
     public function show(){
-      $f=Storage::get('public/uploads/EYL12ZZJ7WEP31Oz7S4FsC6cfrdIStzljDy2aCbY');
+      $f=Storage::get('public/uploads/jlrK72Dss9cG2wlxu0GaNhTwNTmuzDltFYYJxnz7');
        $size = Storage::size("public/uploads/file");
        return response()->json(['message' => 'File uploaded successfully', 'file_size' => "$size  bytes"]);
 
@@ -27,74 +28,53 @@ return response()->json(['message' => 'File uploaded successfully', 'file_path' 
 
 
     public function split(){
-        $text =Storage::get('public/uploads/EYL12ZZJ7WEP31Oz7S4FsC6cfrdIStzljDy2aCbY');
-          print_r($text);
-        $split = str_split($text, 5);
-        //  dd($split);
-        $arraySize = count($split);
-        $size = Storage::size("public/uploads/EYL12ZZJ7WEP31Oz7S4FsC6cfrdIStzljDy2aCbY");
-       // dd($arraySize);
-        $l=$size/5;
-        for($i=0;$i<$l;$i++){
-            $s[$i]=  crypt::encryptString($split[$i]);
+        $text =Storage::get("public/uploads/rCWHJZAYE9XWNK7RnqVAFJW7hIhr6q5yNibFnOUI.3gp");
+        $size = Storage::size("public/uploads/rCWHJZAYE9XWNK7RnqVAFJW7hIhr6q5yNibFnOUI.3gp");
+        $split = str_split($text, 250);
+        echo " index 0 = " . strlen($split[0]);
+        $array_size = count($split);
+       echo " bytes = " .$size;
+       echo " arraySize = " .$array_size;
+       $split_text="";
+
+      // $file = 'public/uploads/saved/save_file7';
+        for($i=0;$i<$array_size;$i++){
+            $myArray[$i]=  crypt::encryptString($split[$i]);
+          // $split_text .=$myArray[$i];
         }
-        // Print_r($s);
-         for($i=0;$i<$l;$i++){
-            // $x = $split[$i];
-            $k[$i]= crypt::decryptString($s[$i]);
-        }
-        $a='';
-        foreach($k as $q){
-            $a .=$q;
-        }
-dd($a);
-//         Print_r($split);
-//         $arraySize = count($split);
-// echo "array size " . $arraySize;
-//         for($i=0;$i<=6;$i++){
-//                  $s= crypt::encryptString($split[$i]);
-//         }
-//          $k= crypt::decryptString($s);
-//       dd($k);
-        // dd($split);
-        // foreach ($split as $s) {
-            // DB::table('users')->where('id', 1)->update([
-            //     'name' => crypt::encryptString('kkkkkkkkkkffffffffffmmmmmmmmmm
-            //     ')]);
-            //     // $user = User::where('id', 2)->first();
-            //     //      $a=$user->name;
-            //        //  $split = str_split($a, 1);
-            //         //  dd($split);
-
-        //    for($i=0;$i<Str::length($split);$i++){
-        //         ( $split[$i]);
-            //  // $s=  crypt::encryptString($split[$i]);
-            // $s= crypt::decryptString($a);
-            //  DB::table('users')->where('id', 2)->update([
-            //     'name' => $s,
-            // ]);
-          //  }
-
-
-
+$file_name="hhhl";
+file_put_contents("$file_name",json_encode($myArray));
+ Storage::put("public/uploads/saved/$file_name", $split_text);
+        echo asset('storage/public/uploads/saved');
+//          Print_r($myArray);
     }
-}
 
-// $handle = fopen('/path/to/bigfile.txt','r');  //open big file with fopen
-// $f = 1; //new file number
+        public function decription_file(){
+        //    $n =Storage::get('public/uploads/saved/array.json');
+           //$text1 =Storage::get('public/uploads/saved/array_json');
+           $file_name="hhhl";
+           $arr2 = json_decode(file_get_contents($file_name), true);
+           $array_size = count($arr2);          
+            for($i=0;$i<$array_size;$i++){
+                            $chars[$i]= crypt::decryptString($arr2[$i]);
+                        }
+                        // Print_r($chars);
+                        $text2='';
+                        foreach($chars as $n){
+                            $text2 .=$n;
+                        }
 
-// while(!feof($handle))
-// {
-//     $newfile = fopen('/path/to/newfile' . $f . '.txt','w'); //create new file to write to with file number
-//     for($i = 1; $i <= 5000; $i++) //for 5000 lines
-//     {
-//         $import = fgets($handle);
-//         fwrite($newfile,$import);
-//         if(feof($handle))
-//         {break;} //If file ends, break loop
-//     }
-//     fclose($newfile);
-//     //MySQL newfile insertion stuff goes here
-//     $f++; //Increment newfile number
-// }
-// fclose($handle);
+                        Storage::put("public/uploads/decrypt/$file_name", $text2);
+                        echo asset('storage/public/uploads/decrypt');
+                        //print_r($text2);
+
+
+
+        }
+    }
+
+//
+
+
+
+
