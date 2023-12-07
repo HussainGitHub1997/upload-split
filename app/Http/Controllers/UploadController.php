@@ -2,79 +2,77 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Crypt;
-use DB;
-use Illuminate\Support\Str;
-use PhpParser\Node\Expr\Print_;
-// use Illuminate\Support\Facades\Facade\DB;
+
 class UploadController extends Controller
 {
 
-    public function upload(Request $request){
- $path=$request->file->Store('public/uploads');
+    public function upload(Request $request)
+    {
+        $path = $request->file->Store('public/uploads');
 
-//  echo ("$size");
-return response()->json(['message' => 'File uploaded successfully', 'file_path' => $path]);
+        return response()->json(['message' => 'File uploaded successfully', 'file_path' => $path]);
     }
-    public function show(){
-      $f=Storage::get('public/uploads/jlrK72Dss9cG2wlxu0GaNhTwNTmuzDltFYYJxnz7');
-       $size = Storage::size("public/uploads/file");
-       return response()->json(['message' => 'File uploaded successfully', 'file_size' => "$size  bytes"]);
-
+    public function show()
+    {
+    //    $file=Storage::get('public/uploads/jlrK72Dss9cG2wlxu0GaNhTwNTmuzDltFYYJxnz7');
+        $size = Storage::size("public/uploads/file");
+        return response()->json(['message' => 'File uploaded successfully', 'file_size' => "$size  bytes"]);
     }
 
 
-    public function split(){
-        $text =Storage::get("public/uploads/rCWHJZAYE9XWNK7RnqVAFJW7hIhr6q5yNibFnOUI.3gp");
-        $size = Storage::size("public/uploads/rCWHJZAYE9XWNK7RnqVAFJW7hIhr6q5yNibFnOUI.3gp");
-        $split = str_split($text, 250);
-        echo " index 0 = " . strlen($split[0]);
+    public function encryption()
+    {
+        $data = Storage::get("public/uploads/IdCu8ouUx1HvLLMkDL9F4PMMcQ5NbJevXFYkEQfY.txt");
+        $size = Storage::size("public/uploads/IdCu8ouUx1HvLLMkDL9F4PMMcQ5NbJevXFYkEQfY.txt");
+
+        $split = str_split($data, 2000);
         $array_size = count($split);
-       echo " bytes = " .$size;
-       echo " arraySize = " .$array_size;
-       $split_text="";
 
-      // $file = 'public/uploads/saved/save_file7';
-        for($i=0;$i<$array_size;$i++){
-            $myArray[$i]=  crypt::encryptString($split[$i]);
-          // $split_text .=$myArray[$i];
+        echo " index 0 = " . strlen($split[0]);
+        echo " bytes = " . $size  . "\n";
+        echo " arraySize = " . $array_size;
+        $encryptionMethod = "AES-256-CBC";
+        $secretKey = "ThisIsASecretKey123";
+        $iv = '1234567891011121';
+
+        for ($i = 0; $i < $array_size; $i++) {
+            $encrypt_data[$i] = openssl_encrypt($split[$i], $encryptionMethod, $secretKey, 0, $iv,);
         }
-$file_name="hhhl";
-file_put_contents("$file_name",json_encode($myArray));
- Storage::put("public/uploads/saved/$file_name", $split_text);
-        echo asset('storage/public/uploads/saved');
-//          Print_r($myArray);
+
+        // Print_r($myArray);
+        $file_name = "file";
+        $string_data = json_encode($encrypt_data);
+        file_put_contents("$file_name", $string_data);
+        Storage::put("public/uploads/saved/$file_name", $string_data);
+        echo asset('storage/public/uploads/saved' . "file name: $file_name");
+        //Print_r($myArray);
     }
 
-        public function decription_file(){
-        //    $n =Storage::get('public/uploads/saved/array.json');
-           //$text1 =Storage::get('public/uploads/saved/array_json');
-           $file_name="hhhl";
-           $arr2 = json_decode(file_get_contents($file_name), true);
-           $array_size = count($arr2);          
-            for($i=0;$i<$array_size;$i++){
-                            $chars[$i]= crypt::decryptString($arr2[$i]);
-                        }
-                        // Print_r($chars);
-                        $text2='';
-                        foreach($chars as $n){
-                            $text2 .=$n;
-                        }
-
-                        Storage::put("public/uploads/decrypt/$file_name", $text2);
-                        echo asset('storage/public/uploads/decrypt');
-                        //print_r($text2);
-
-
-
+    public function decription()
+    {
+        $file_name = "file";
+        $decryptionMethod = "AES-256-CBC";
+        $secretKey = "ThisIsASecretKey123";
+        $iv = '1234567891011121';
+        $encrypt_data = json_decode(file_get_contents($file_name), true);
+        //    print_r ($arr2);
+        $array_size = count($encrypt_data);
+        for ($i = 0; $i < $array_size; $i++) {
+            $data[$i] = openssl_decrypt($encrypt_data[$i], $decryptionMethod, $secretKey, 0, $iv,);
         }
+        // Print_r($data);
+        $decrypt_data = '';
+        foreach ($data as $all) {
+            $decrypt_data .= $all;
+        }
+
+        Storage::put("public/uploads/decrypt/$file_name", $decrypt_data);
+        echo asset('storage/public/uploads/decrypt' . "file name: $file_name ");
+        //print_r($text2);
+
+
+
     }
-
-//
-
-
-
-
+}
